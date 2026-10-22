@@ -1,0 +1,26 @@
+HOW TO INSTALL iPHONE USB DRIVERS ON WINDOWS (needed before first run)
+======================================================================
+
+The EXE talks to the iPhone over USB using Apple's driver stack
+(usbmuxd). Pick ONE of these:
+
+Option 1 — Apple Devices app (Windows 10/11, recommended)
+  Microsoft Store -> search "Apple Devices" -> Install
+  (also install "iCloud" from the Store if asked)
+  Plug the iPhone once, tap "Trust" on the phone, done.
+
+Option 2 — iTunes from Apple's website
+  https://www.apple.com/itunes/download/
+  32-bit Windows: use iTunes 12.10.11 (the last 32-bit build).
+  64-bit Windows: use the current iTunes.
+
+Option 3 — iCloud for Windows (Microsoft Store) also installs the drivers.
+
+AFTER INSTALLING: plug the iPhone in with a USB cable, unlock the phone,
+tap "Trust This Computer", enter the passcode.
+Then start A12Bypass_Windows.exe — it should show your device.
+
+If the device is still not detected:
+  - try a different USB cable/port (use a data cable, not charge-only)
+  - check Device Manager for "Apple Mobile Device USB Driver"
+  - reinstall the drivers from Option 1 or 2

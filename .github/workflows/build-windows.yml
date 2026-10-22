@@ -1,0 +1,75 @@
+name: Build Windows 32-bit EXE
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # 32-bit CPython -> produces a 32-bit EXE that runs on
+      # Windows 10 32-bit AND 64-bit.
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          architecture: x86
+
+      - name: Install dependencies
+        shell: pwsh
+        run: |
+          python -m pip install --upgrade pip
+          pip install pyinstaller requests
+          # pymobiledevice3 with --no-deps: three of its optional dependencies
+          # (av, sslpsk-pmd3, qh3) ship no win32 wheels. They are lazy/guarded
+          # optional imports and are not used by this tool's device flow.
+          # Every remaining dependency is pinned in requirements-win32.txt.
+          pip install --no-deps pymobiledevice3
+          pip install -r requirements-win32.txt
+
+      - name: Self-test (payload generation, no device needed)
+        shell: pwsh
+        run: python selftest.py
+
+      - name: Build EXE
+        shell: pwsh
+        run: >
+          pyinstaller --onefile --console --clean
+          --name A12Bypass_Windows
+          --collect-all pymobiledevice3
+          app_windows.py
+
+      - name: Package ZIP (exe + all device assets + readme)
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force dist/package/assets | Out-Null
+          Copy-Item dist/A12Bypass_Windows.exe dist/package/
+          Copy-Item -Recurse -Force server/assets/Maker dist/package/assets/
+          Copy-Item README_WINDOWS.md dist/package/
+          Copy-Item GET_DRIVERS.txt dist/package/
+          Compress-Archive -Path dist/package/* -DestinationPath dist/A12Bypass_Windows_win32.zip -Force
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: A12Bypass_Windows_win32
+          path: dist/A12Bypass_Windows_win32.zip
+          retention-days: 90
+
+  release:
+    # A GitHub Release with the ZIP is created automatically
+    # whenever you push a tag like v1.0
+    if: startsWith(github.ref, 'refs/tags/')
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: A12Bypass_Windows_win32
+          path: dist
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: dist/A12Bypass_Windows_win32.zip

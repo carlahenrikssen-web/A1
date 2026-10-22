@@ -1,0 +1,49 @@
+# Dependencies for pymobiledevice3 on 32-bit Windows (Python 3.12 x86).
+# pymobiledevice3 itself is installed with --no-deps by the build workflow;
+# this file provides every required package EXCEPT three optional ones that
+# have no 32-bit Windows wheels: 'av', 'sslpsk-pmd3', 'qh3'.
+# All three are lazy/guarded optional imports inside pymobiledevice3 and are
+# not used by this tool's device flow (verified by selftest.py at build time).
+# Generated from pymobiledevice3 11.43.1 METADATA.
+asn1
+IPython
+bpylist2>=4.0.1
+pygments
+daemonize
+pykdebugparser>=1.10.0
+pyusb>=1.2.1
+rich>=13.0.0
+ansilogs>=1.1.0
+requests
+packaging
+typing_extensions>=4.1.0
+pygnuutils>=0.0.7
+cryptography>=43.0.0
+pycrashreport>=2.0.0
+fastapi>=0.93.0
+uvicorn>=0.15.0
+wsproto
+Pillow
+questionary>=2.0.0
+ipsw_parser>=1.8.4
+ifaddr
+hyperframe
+srptools
+developer_disk_image>=0.3.0
+opack2>=0.1.0
+psutil
+pytun-pmd3>=3.0.3
+prompt_toolkit
+python-pcapng>=2.1.1
+pyimg4>=0.8.8
+pyiosbackup>=0.2.4
+typer>=0.25; python_version >= "3.10"
+typer-injector>=0.3.0
+defusedxml
+pywin32; platform_system == "Windows"
+bytestruct>=0.1.0
+ioregistry>=0.0.6; platform_system == "Darwin"
+pmd-pytcp>=0.3.8; python_version >= "3.9"
+pmd-net-addr
+asgiwebdav>=2.0.1; python_version >= "3.10"
+backports.zstd; python_version >= "3.10" and python_version < "3.14"
