@@ -22,13 +22,12 @@ jobs:
         shell: pwsh
         run: |
           python -m pip install --upgrade pip
-          pip install pyinstaller requests
-          # pymobiledevice3 with --no-deps: three of its optional dependencies
-          # (av, sslpsk-pmd3, qh3) ship no win32 wheels. They are lazy/guarded
-          # optional imports and are not used by this tool's device flow.
-          # Every remaining dependency is pinned in requirements-win32.txt.
-          pip install --no-deps pymobiledevice3
-          pip install -r requirements-win32.txt
+          # --only-binary=:all: makes pip fail loudly if any package has
+          # no win32 wheel, instead of trying (and failing) to compile
+          # from source. Way easier to debug.
+          pip install --only-binary=:all: pyinstaller requests
+          pip install --no-deps --only-binary=:all: pymobiledevice3
+          pip install --only-binary=:all: -r requirements-win32.txt
 
       - name: Self-test (payload generation, no device needed)
         shell: pwsh
@@ -58,18 +57,3 @@ jobs:
           name: A12Bypass_Windows_win32
           path: dist/A12Bypass_Windows_win32.zip
           retention-days: 90
-
-  release:
-    # A GitHub Release with the ZIP is created automatically
-    # whenever you push a tag like v1.0
-    if: startsWith(github.ref, 'refs/tags/')
-    needs: build
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/download-artifact@v4
-        with:
-          name: A12Bypass_Windows_win32
-          path: dist
-      - uses: softprops/action-gh-release@v2
-        with:
-          files: dist/A12Bypass_Windows_win32.zip
