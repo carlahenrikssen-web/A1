@@ -41,7 +41,7 @@ def test_assets_present():
 
 def test_payload_generation():
     server = app_windows.LocalServer(port=18099)
-    assets = os.path.abspath(os.path.join(app_windows.app_dir(), "assets"))
+    assets = str(app_windows.find_assets_root())
     server.start()
     try:
         gen = app_windows.PayloadGenerator(server.serve_dir, assets)
