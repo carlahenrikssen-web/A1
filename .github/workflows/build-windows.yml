@@ -11,23 +11,28 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # 32-bit CPython -> produces a 32-bit EXE that runs on
-      # Windows 10 32-bit AND 64-bit.
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
           architecture: x86
 
+      - name: Show Python
+        shell: pwsh
+        run: |
+          python -c "import sys,platform; print(sys.version); print(platform.architecture())"
+
       - name: Install dependencies
         shell: pwsh
         run: |
           python -m pip install --upgrade pip
-          # --only-binary=:all: makes pip fail loudly if any package has
-          # no win32 wheel, instead of trying (and failing) to compile
-          # from source. Way easier to debug.
           pip install --only-binary=:all: pyinstaller requests
-          pip install --no-deps --only-binary=:all: pymobiledevice3
-          pip install --only-binary=:all: -r requirements-win32.txt
+          pip install --no-deps --only-binary=:all: pymobiledevice3==11.43.1
+          pip install --only-binary=:all: cryptography==48.0.1 psutil==7.1.1 pywin32==312 asn1 "bpylist2>=4.0.1" bytestruct pygments daemonize pykdebugparser pyusb rich ansilogs packaging typing_extensions pygnuutils pycrashreport fastapi uvicorn wsproto Pillow questionary ipsw_parser ifaddr hyperframe srptools developer_disk_image opack2 pytun-pmd3 prompt_toolkit python-pcapng pyimg4 pyiosbackup typer typer-injector defusedxml pmd-pytcp pmd-net-addr asgiwebdav backports.zstd IPython
+
+      - name: Verify imports
+        shell: pwsh
+        run: |
+          python -c "from pymobiledevice3.lockdown import create_using_usbmux; from pymobiledevice3.services.afc import AfcService; from pymobiledevice3.services.diagnostics import DiagnosticsService; from pymobiledevice3.services.syslog import SyslogService; print('ALL IMPORTS OK')"
 
       - name: Self-test (payload generation, no device needed)
         shell: pwsh
@@ -41,7 +46,7 @@ jobs:
           --collect-all pymobiledevice3
           app_windows.py
 
-      - name: Package ZIP (exe + all device assets + readme)
+      - name: Package ZIP
         shell: pwsh
         run: |
           New-Item -ItemType Directory -Force dist/package/assets | Out-Null
@@ -51,7 +56,7 @@ jobs:
           Copy-Item GET_DRIVERS.txt dist/package/
           Compress-Archive -Path dist/package/* -DestinationPath dist/A12Bypass_Windows_win32.zip -Force
 
-      - name: Upload build artifact
+      - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
           name: A12Bypass_Windows_win32
