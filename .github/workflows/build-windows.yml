@@ -29,19 +29,13 @@ jobs:
 
       - name: Install pymobiledevice3 without dependency resolution
         shell: pwsh
-        run: pip install --no-deps --only-binary=:all: pymobiledevice3==11.43.1
+        run: |
+          pip install --no-deps --only-binary=:all: pymobiledevice3==11.43.1
 
       - name: Install dependencies
         shell: pwsh
         run: |
-          pip install --only-binary=:all: `
-            cryptography==48.0.1 psutil==7.1.1 pywin32==312 asn1 "bpylist2>=4.0.1" `
-            bytestruct pygments daemonize pykdebugparser pyusb rich ansilogs `
-            packaging typing_extensions pygnuutils pycrashreport fastapi uvicorn `
-            wsproto Pillow questionary ipsw_parser ifaddr hyperframe srptools `
-            developer_disk_image opack2 pytun-pmd3 prompt_toolkit python-pcapng `
-            pyimg4 pyiosbackup typer typer-injector defusedxml pmd-pytcp `
-            pmd-net-addr asgiwebdav backports.zstd IPython
+          pip install --only-binary=:all: cryptography==48.0.1 psutil==7.1.1 pywin32==312 asn1 "bpylist2>=4.0.1" bytestruct pygments daemonize pykdebugparser pyusb rich ansilogs packaging typing_extensions pygnuutils pycrashreport fastapi uvicorn wsproto Pillow questionary ipsw_parser ifaddr hyperframe srptools developer_disk_image opack2 pytun-pmd3 prompt_toolkit python-pcapng pyimg4 pyiosbackup typer typer-injector defusedxml pmd-pytcp pmd-net-addr asgiwebdav backports.zstd IPython
 
       - name: Verify imports
         shell: pwsh
@@ -50,15 +44,13 @@ jobs:
 
       - name: Self-test
         shell: pwsh
-        run: python selftest.py
+        run: |
+          python selftest.py
 
       - name: Build EXE
         shell: pwsh
-        run: >
-          pyinstaller --onefile --console --clean
-          --name A12Bypass_Windows
-          --collect-all pymobiledevice3
-          app_windows.py
+        run: |
+          pyinstaller --onefile --console --clean --name A12Bypass_Windows --collect-all pymobiledevice3 app_windows.py
 
       - name: Package ZIP
         shell: pwsh
